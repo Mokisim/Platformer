@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -16,12 +17,12 @@ public class PlayerMovement : MonoBehaviour
     private float _groundRaycastLength = 0.65f;
     private bool _onGround;
     [SerializeField] private Vector3 _groundRaycastOffset;
-    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _extraJumpsValue > 0);
+    private bool _canJump => _aviableJumps > 0;
     private float _airLinearDrag = 2.5f;
     private float _fallMultiplier = 8f;
     private float _lowJumpFallMultiplier = 3f;
-    private int _extraJumps = 0;
-    private int _extraJumpsValue;
+    private int _jumpsValue = 1;
+    private int _aviableJumps;
     private float _hangTime = 0.2f;
     private float _hangTimeCounter;
     private float _jumpBufferLength = 0.1f;
@@ -34,6 +35,11 @@ public class PlayerMovement : MonoBehaviour
 
     private bool _changingDirection =>
         (_rigidbody2D.velocity.x > 0f && _horizontalDirection < 0f) || (_rigidbody2D.velocity.x < 0f && _horizontalDirection > 0f);
+
+    private void Awake()
+    {
+        StartCoroutine(ResetJumps());
+    }
 
     private void Start()
     {
@@ -67,7 +73,6 @@ public class PlayerMovement : MonoBehaviour
         if (_onGround)
         {
             ApplyGroundLinearDrag();
-            _extraJumpsValue = _extraJumps;
             _hangTimeCounter = _hangTime;
         }
         else
@@ -105,11 +110,22 @@ public class PlayerMovement : MonoBehaviour
 
         if (!_onGround)
         {
-            _extraJumpsValue--;
+            _aviableJumps--;
         }
-
+        
         _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0f);
         _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+    }
+
+    private IEnumerator ResetJumps()
+    {
+        if (_onGround)
+        {
+            _aviableJumps = _jumpsValue;
+            Debug.Log("On ground");
+        }
+        
+        yield return _aviableJumps;
     }
 
     private void FallMultiplier()

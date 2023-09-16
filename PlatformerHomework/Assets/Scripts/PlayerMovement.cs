@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private float _groundRaycastLength = 0.65f;
     private bool _onGround;
     [SerializeField] private Vector3 _groundRaycastOffset;
-    private bool _canJump => _aviableJumps > 0;
+    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _aviableJumps > 0);
     private float _airLinearDrag = 2.5f;
     private float _fallMultiplier = 8f;
     private float _lowJumpFallMultiplier = 3f;
@@ -35,11 +35,6 @@ public class PlayerMovement : MonoBehaviour
 
     private bool _changingDirection =>
         (_rigidbody2D.velocity.x > 0f && _horizontalDirection < 0f) || (_rigidbody2D.velocity.x < 0f && _horizontalDirection > 0f);
-
-    private void Awake()
-    {
-        StartCoroutine(ResetJumps());
-    }
 
     private void Start()
     {
@@ -59,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
             _jumpBufferCounter -= Time.deltaTime;
         }
 
-        if (_canJump)
+        if (_canJump && Input.GetButtonDown("Jump"))
         {
             Jump();
         }
@@ -74,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
         {
             ApplyGroundLinearDrag();
             _hangTimeCounter = _hangTime;
+            _aviableJumps = _jumpsValue;
         }
         else
         {
@@ -112,20 +108,12 @@ public class PlayerMovement : MonoBehaviour
         {
             _aviableJumps--;
         }
-        
-        _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0f);
-        _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-    }
 
-    private IEnumerator ResetJumps()
-    {
-        if (_onGround)
+        if (_aviableJumps > 0)
         {
-            _aviableJumps = _jumpsValue;
-            Debug.Log("On ground");
+            _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0f);
+            _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
-        
-        yield return _aviableJumps;
     }
 
     private void FallMultiplier()

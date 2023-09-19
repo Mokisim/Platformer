@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private float _groundRaycastLength = 0.65f;
     private bool _onGround;
     [SerializeField] private Vector3 _groundRaycastOffset;
-    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f || _aviableJumps > 0);
+    private bool _canJump => _jumpBufferCounter > 0f && (_hangTimeCounter > 0f && _aviableJumps > 0);
     private float _airLinearDrag = 2.5f;
     private float _fallMultiplier = 8f;
     private float _lowJumpFallMultiplier = 3f;
@@ -104,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
         _hangTimeCounter = 0f;
         _jumpBufferCounter = 0f;
 
-        if (!_onGround)
+        if (!_onGround && _hangTime < 0)
         {
             _aviableJumps--;
         }

@@ -14,9 +14,11 @@ GameObject:
   - component: {fileID: 2907922855327947047}
   - component: {fileID: 7642717478439337249}
   - component: {fileID: 3820083391347398908}
+  - component: {fileID: 1872573896299529449}
+  - component: {fileID: 7273207271849180824}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -120,7 +122,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0074043274, y: -0.012124538}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -187,3 +189,51 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  _groundRaycastOffset: {x: 0.5, y: 0, z: 0}
+  _jumpsValue: 1
+  _groundRaycastLength: 0.56
+  _edgeRaycastOffset: {x: 0.51, y: 0.01, z: 0}
+  _innerRaycastOffset: {x: 0.15, y: 0.01, z: 0}
+--- !u!95 &1872573896299529449
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6259035615036710542}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0a98a86c9f43300499455f636a6f41ca, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7273207271849180824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6259035615036710542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db964bcfdb62cc44b882c75ca49b5270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scoreText: {fileID: 0}
+  _hearts:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _heartSprite: {fileID: 21300000, guid: be010069180cd894798523e8d56a15ac, type: 3}
+  _emptyHeartSprite: {fileID: 21300000, guid: ed29461511a7708498b75a7aa5e033c3, type: 3}
+  _spawnPoint: {fileID: 0}
+  _player: {fileID: 6259035615036710542}
+  _restartScript: {fileID: 0}

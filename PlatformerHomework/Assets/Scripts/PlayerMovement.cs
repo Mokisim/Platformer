@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
 
-    [Header("Controls")]
+    [Header("Movement")]
     private bool _facingRight = true;
     private float _movementAcceleration = 65;
     private float _maxMovementSpeed = 12;
@@ -31,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpBufferLength = 0.1f;
     private float _jumpBufferCounter;
     private int _jumpInputChecker = 0;
+
+    [Header("Dash")]
     private int _dashImpulse = 10000;
     private bool _lockDash = false;
 

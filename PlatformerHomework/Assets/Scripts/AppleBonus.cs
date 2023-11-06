@@ -9,12 +9,13 @@ public class AppleBonus : MonoBehaviour
     [SerializeField] public AudioClip _eatingClip;
     [SerializeField] private Collider2D _apple;
 
-    private void OnTriggerEnter2D(Collider2D apple)
+    private void OnTriggerStay2D(Collider2D apple)
     {
         if (apple.CompareTag("Player"))
         {
             PlaySound();
             DestroyApple();
+            Debug.Log("Trigger");
         }
     }
 

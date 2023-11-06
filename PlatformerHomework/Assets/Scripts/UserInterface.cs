@@ -8,6 +8,8 @@ using Unity.VisualScripting;
 
 public class UserInterface : MonoBehaviour
 {
+    private AppleBonus _appleBonus;
+
     [SerializeField] private Text _scoreText;
     [SerializeField] private Image[] _hearts;
     [SerializeField] private Sprite _heartSprite;
@@ -23,6 +25,9 @@ public class UserInterface : MonoBehaviour
     private Transform _lastCheackPoint;
     
     [SerializeField]private RestartScript _restartScript;
+
+    private bool _isImmotral;
+    private bool _isPickUp;
     
     private void Start()
     {
@@ -37,17 +42,25 @@ public class UserInterface : MonoBehaviour
         HealthChecker();
     }
 
-    private void OnTriggerEnter2D(Collider2D player)
+    public void OnTriggerEnter2D(Collider2D player)
     {
-        if (player.CompareTag("AppleBonus"))
+        if (player.CompareTag("AppleBonus") && _isPickUp == false)
         {
             _score += 1;
             _scoreText.text = _score.ToString();
+            _isPickUp = true;
+            Invoke("PickUpBonus", 0.05f);
         }
+    }
 
-        if (player.CompareTag("Trap"))
+    public void OnTriggerStay2D(Collider2D player)
+    {
+        if (player.CompareTag("Trap") && _isImmotral == false)
         {
             _health--;
+            _isImmotral = true;
+            Invoke("ImmortalTimeChecker", 0.5f);
+
             _player.position = _lastCheackPoint.position;
         }
 
@@ -55,6 +68,16 @@ public class UserInterface : MonoBehaviour
         {
             _lastCheackPoint.position = _player.transform.position;
         }
+    }
+
+    private void ImmortalTimeChecker()
+    {
+        _isImmotral = false;
+    }
+
+    private void PickUpBonus()
+    {
+        _isPickUp = false;
     }
 
     private void HealthChecker()

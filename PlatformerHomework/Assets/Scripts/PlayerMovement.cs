@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro.EditorUtilities;
@@ -9,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D _rigidbody2D;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private UserInterface _userInterface;
 
     [Header("Movement")]
     private bool _facingRight = true;
@@ -33,7 +35,10 @@ public class PlayerMovement : MonoBehaviour
     private int _jumpInputChecker = 0;
 
     [Header("Dash")]
-    private int _dashImpulse = 10000;
+    private float _dashSpeed = 10;
+    private float _dashTime;
+    private float _startDashTime = 0.15f;
+    private int _direction;
     private bool _lockDash = false;
 
     [Header("CheckCollisions")]
@@ -51,6 +56,9 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _userInterface = GetComponent<UserInterface>();
+
+        _dashTime = _startDashTime;
     }
 
     private void Update()
@@ -119,6 +127,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == 2 && _lockDash)
+        {
+            _rigidbody2D.velocity = Vector2.zero;
+        }
+    }
+
     private Vector2 GetInput()
     {
         return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -136,11 +152,11 @@ public class PlayerMovement : MonoBehaviour
         float currentSpeed = Mathf.Abs(Input.GetAxisRaw("Horizontal") * _maxMovementSpeed);
         _animator.SetFloat("Speed", currentSpeed);
 
-        if(Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
+        if (Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
         {
             Flip();
         }
-        else if(Input.GetAxisRaw("Horizontal") < 0 && _facingRight)
+        else if (Input.GetAxisRaw("Horizontal") < 0 && _facingRight)
         {
             Flip();
         }
@@ -153,26 +169,112 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Dash()
+
+
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1) && !_lockDash)
+
+
+        if (_direction == 0)
+
+
         {
-            _lockDash = true;
-            Invoke("DashLock", 0.5f);
 
-            _animator.StopPlayback();
-            _animator.Play("DashAnimation");
 
-            _rigidbody2D.velocity = new Vector2(0, 0);
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
 
-            if(!_facingRight)
+
             {
-                _rigidbody2D.AddForce(Vector2.left * _dashImpulse);
+
+
+                _direction = 1;
+
+
             }
-            else
+
+
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+
+
             {
-                _rigidbody2D.AddForce(Vector2.right * _dashImpulse);
+
+
+                _direction = 2;
+
+
             }
+
+
         }
+
+
+        else
+
+
+        {
+
+
+            if (_dashTime <= 0)
+
+
+            {
+
+
+                _direction = 0;
+
+
+                _dashTime = _startDashTime;
+
+
+                _rigidbody2D.velocity = Vector2.zero;
+
+
+            }
+
+
+            else
+
+
+            {
+
+
+                _dashTime -= Time.deltaTime;
+
+
+                Vector2 dashPosition = _rigidbody2D.position;
+                float dashDistance = 0.3f;
+
+                if (_direction == 1)
+
+
+                {
+
+
+                    dashPosition.x -= dashDistance;
+
+
+                }
+
+
+                else if (_direction == 2)
+
+
+                {
+
+
+                    dashPosition.x += dashDistance;
+
+
+                }
+
+                _rigidbody2D.MovePosition(dashPosition);
+
+
+            }
+
+
+        }
+
+
     }
 
     private void DashLock()

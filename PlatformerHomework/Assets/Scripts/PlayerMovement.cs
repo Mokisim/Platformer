@@ -169,112 +169,44 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Dash()
-
-
     {
-
-
         if (_direction == 0)
-
-
         {
-
-
             if (Input.GetKeyDown(KeyCode.LeftArrow))
-
-
             {
-
-
                 _direction = 1;
-
-
             }
-
-
             else if (Input.GetKeyDown(KeyCode.RightArrow))
-
-
             {
-
-
                 _direction = 2;
-
-
             }
-
-
         }
-
-
         else
-
-
         {
-
-
             if (_dashTime <= 0)
-
-
             {
-
-
                 _direction = 0;
-
-
                 _dashTime = _startDashTime;
-
-
                 _rigidbody2D.velocity = Vector2.zero;
-
-
             }
-
-
             else
-
-
             {
-
-
                 _dashTime -= Time.deltaTime;
-
-
                 Vector2 dashPosition = _rigidbody2D.position;
                 float dashDistance = 0.3f;
 
                 if (_direction == 1)
-
-
                 {
-
-
                     dashPosition.x -= dashDistance;
-
-
                 }
-
-
                 else if (_direction == 2)
-
-
                 {
-
-
                     dashPosition.x += dashDistance;
-
-
                 }
 
                 _rigidbody2D.MovePosition(dashPosition);
-
-
             }
-
-
         }
-
-
     }
 
     private void DashLock()

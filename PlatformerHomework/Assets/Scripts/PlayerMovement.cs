@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro.EditorUtilities;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -34,13 +35,6 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpBufferCounter;
     private int _jumpInputChecker = 0;
 
-    [Header("Dash")]
-    private float _dashSpeed = 10;
-    private float _dashTime;
-    private float _startDashTime = 0.15f;
-    private int _direction;
-    private bool _lockDash = false;
-
     [Header("CheckCollisions")]
     [SerializeField] private float _groundRaycastLength = 0.65f;
     [SerializeField] private Vector3 _edgeRaycastOffset;
@@ -57,15 +51,11 @@ public class PlayerMovement : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _userInterface = GetComponent<UserInterface>();
-
-        _dashTime = _startDashTime;
     }
 
     private void Update()
     {
         _horizontalDirection = GetInput().x;
-
-        Dash();
 
         if (Input.GetButtonDown("Jump"))
         {
@@ -127,15 +117,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.layer == 2 && _lockDash)
-        {
-            _rigidbody2D.velocity = Vector2.zero;
-        }
-    }
-
-    private Vector2 GetInput()
+   private Vector2 GetInput()
     {
         return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     }
@@ -166,52 +148,6 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0f);
         _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-    }
-
-    private void Dash()
-    {
-        if (_direction == 0)
-        {
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                _direction = 1;
-            }
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                _direction = 2;
-            }
-        }
-        else
-        {
-            if (_dashTime <= 0)
-            {
-                _direction = 0;
-                _dashTime = _startDashTime;
-                _rigidbody2D.velocity = Vector2.zero;
-            }
-            else
-            {
-                _dashTime -= Time.deltaTime;
-                Vector2 dashPosition = _rigidbody2D.position;
-                float dashDistance = 0.3f;
-
-                if (_direction == 1)
-                {
-                    dashPosition.x -= dashDistance;
-                }
-                else if (_direction == 2)
-                {
-                    dashPosition.x += dashDistance;
-                }
-
-                _rigidbody2D.MovePosition(dashPosition);
-            }
-        }
-    }
-
-    private void DashLock()
-    {
-        _lockDash = false;
     }
 
     private void FallMultiplier()

@@ -64,6 +64,15 @@ public class UserInterface : MonoBehaviour
             _player.position = _lastCheackPoint.position;
         }
 
+        if (player.CompareTag("Enemy") && _isImmotral == false)
+        {
+            _health--;
+            _isImmotral = true;
+            Invoke("ImmortalTimeChecker", 0.5f);
+
+            _player.position = _lastCheackPoint.position;
+        }
+
         if (player.CompareTag("CheackPoint"))
         {
             _lastCheackPoint.position = _player.transform.position;

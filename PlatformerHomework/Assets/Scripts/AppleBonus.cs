@@ -7,7 +7,6 @@ using DG.Tweening;
 [RequireComponent(typeof(Transform))]
 public class AppleBonus : MonoBehaviour
 {
-    [SerializeField] public AudioSource _eatingSound;
     [SerializeField] public AudioClip _eatingClip;
     [SerializeField] private Collider2D _apple;
 
@@ -34,7 +33,7 @@ public class AppleBonus : MonoBehaviour
 
     private void PlaySound()
     {
-        _eatingSound.PlayOneShot(_eatingClip);
+        AudioSource.PlayClipAtPoint(_eatingClip, transform.position);
     }
 
     public void DestroyApple()

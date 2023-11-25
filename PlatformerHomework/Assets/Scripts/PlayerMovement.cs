@@ -10,9 +10,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D _rigidbody2D;
     private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
-    private UserInterface _userInterface;
-
+    
     [Header("Movement")]
     private float _horizontal;
     private float _speed = 8f;
@@ -56,8 +54,6 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        _userInterface = GetComponent<UserInterface>();
     }
 
     private void Update()
@@ -83,7 +79,6 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             _jumpBufferCounter = _jumpBufferLength;
-            Debug.Log($"prigok: {_jumpBufferCounter}");
         }
 
         if (_canJump && Input.GetButtonDown("Jump"))
@@ -142,7 +137,6 @@ public class PlayerMovement : MonoBehaviour
             _animator.SetBool("OnGround", false);
             _jumpBufferCounter -= Time.deltaTime;
             _jumpInputChecker = 1;
-            Debug.Log($"polet: {_jumpBufferCounter}");
         }
 
         if (_canCornerCorrect)

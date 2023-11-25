@@ -49,7 +49,7 @@ public class UserInterface : MonoBehaviour
             _score += 1;
             _scoreText.text = _score.ToString();
             _isPickUp = true;
-            Invoke("PickUpBonus", 0.05f);
+            Invoke("PickUpBonus", 0.02f);
         }
     }
 

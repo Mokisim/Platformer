@@ -14,10 +14,10 @@ public class PlayerMovement : MonoBehaviour
     private UserInterface _userInterface;
 
     [Header("Movement")]
+    private float _horizontal;
+    private float _speed = 8f;
     private bool _facingRight = true;
-    private float _movementAcceleration = 65;
-    private float _maxMovementSpeed = 12;
-    private float _groundLinearDrag = 10;
+    private float _groundLinearDrag = 5f;
     private float _horizontalDirection;
     private float _jumpForce = 20f;
     [SerializeField] private LayerMask _groundLayer;
@@ -42,6 +42,13 @@ public class PlayerMovement : MonoBehaviour
     private float _topRaycastLength = 0.85f;
     private bool _canCornerCorrect;
 
+    [Header("Dashing")]
+    private bool _canDash = true;
+    private bool _isDashing;
+    private float _dashingPower = 30f;
+    private float _dashingTime = 0.3f;
+    private float _dashingCooldown = 0.5f;
+
     private bool _changingDirection =>
        (_rigidbody2D.velocity.x > 0f && _horizontalDirection < 0f) || (_rigidbody2D.velocity.x < 0f && _horizontalDirection > 0f);
 
@@ -56,6 +63,22 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         _horizontalDirection = GetInput().x;
+
+        if (_isDashing)
+        {
+            return;
+        }
+
+        _horizontal = Input.GetAxisRaw("Horizontal");
+
+        if (Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
+        {
+            Flip();
+        }
+        else if (Input.GetAxisRaw("Horizontal") < 0 && _facingRight)
+        {
+            Flip();
+        }
 
         if (Input.GetButtonDown("Jump"))
         {
@@ -83,12 +106,23 @@ public class PlayerMovement : MonoBehaviour
         {
             _hangTimeCounter -= Time.deltaTime;
         }
+
+        if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash)
+        {
+            StartCoroutine(Dash());
+        }
     }
 
     private void FixedUpdate()
     {
         CheckCollisions();
-        MoveCharacter();
+
+        if (_isDashing)
+        {
+            return;
+        }
+
+        _rigidbody2D.velocity = new Vector2(_horizontal * _speed, _rigidbody2D.velocity.y);
 
         if (_onGround)
         {
@@ -117,37 +151,42 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-   private Vector2 GetInput()
+    private Vector2 GetInput()
     {
         return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-    }
-
-    private void MoveCharacter()
-    {
-        _rigidbody2D.AddForce(new Vector2(_horizontalDirection, 0f) * _movementAcceleration);
-
-        if (Mathf.Abs(_rigidbody2D.velocity.x) > _maxMovementSpeed)
-        {
-            _rigidbody2D.velocity = new Vector2(Mathf.Sign(_rigidbody2D.velocity.x) * _maxMovementSpeed, _rigidbody2D.velocity.y);
-        }
-
-        float currentSpeed = Mathf.Abs(Input.GetAxisRaw("Horizontal") * _maxMovementSpeed);
-        _animator.SetFloat("Speed", currentSpeed);
-
-        if (Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
-        {
-            Flip();
-        }
-        else if (Input.GetAxisRaw("Horizontal") < 0 && _facingRight)
-        {
-            Flip();
-        }
     }
 
     private void Jump()
     {
         _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 0f);
         _rigidbody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+    }
+
+    private IEnumerator Dash()
+    {
+        int facingLeftNumber = -1;
+        _canDash = false;
+        _isDashing = true;
+        float originalGravity = _rigidbody2D.gravityScale;
+        _rigidbody2D.gravityScale = 0f;
+        _animator.StopPlayback();
+        _animator.Play("DashAnimation");
+
+        if (_facingRight)
+        {
+            _rigidbody2D.velocity = new Vector2(transform.localScale.x * _dashingPower, 0f);
+        }
+        else if (!_facingRight)
+        {
+            _rigidbody2D.velocity = new Vector2(transform.localScale.x * _dashingPower * facingLeftNumber, 0f);
+        }
+
+        yield return new WaitForSeconds(_dashingTime);
+        _rigidbody2D.gravityScale = originalGravity;
+        _isDashing = false;
+        _animator.StopPlayback();
+        yield return new WaitForSeconds(_dashingCooldown);
+        _canDash = true;
     }
 
     private void FallMultiplier()
@@ -197,14 +236,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyGroundLinearDrag()
     {
-        if (Mathf.Abs(_horizontalDirection) < 0.4f || _changingDirection)
-        {
-            _rigidbody2D.drag = _groundLinearDrag;
-        }
-        else
-        {
-            _rigidbody2D.drag = 0f;
-        }
+        _rigidbody2D.drag = _groundLinearDrag;
     }
 
     private void ApplyAirLinearDrag()

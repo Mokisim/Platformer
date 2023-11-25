@@ -47,6 +47,10 @@ public class PlayerMovement : MonoBehaviour
     private float _dashingTime = 0.3f;
     private float _dashingCooldown = 0.5f;
 
+    [Header("Camera")]
+    [SerializeField] private GameObject _cameraFollowGo;
+    private CameraFollowingObjectScript _cameraFollowObject;
+
     private bool _changingDirection =>
        (_rigidbody2D.velocity.x > 0f && _horizontalDirection < 0f) || (_rigidbody2D.velocity.x < 0f && _horizontalDirection > 0f);
 
@@ -54,6 +58,8 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+
+        _cameraFollowObject = _cameraFollowGo.GetComponent<CameraFollowingObjectScript>();
     }
 
     private void Update()
@@ -70,10 +76,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
         {
             Flip();
+            _cameraFollowObject.CallTurn();
         }
         else if (Input.GetAxisRaw("Horizontal") < 0 && _facingRight)
         {
             Flip();
+            _cameraFollowObject.CallTurn();
         }
 
         if (Input.GetButtonDown("Jump"))

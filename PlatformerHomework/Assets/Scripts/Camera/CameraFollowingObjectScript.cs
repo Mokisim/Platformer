@@ -6,7 +6,7 @@ public class CameraFollowingObjectScript : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform _playerTransform;
-
+    
     [Header("Flip Rotation Stats")]
     [SerializeField] private float _flipYRotationTime = 0.5f;
 

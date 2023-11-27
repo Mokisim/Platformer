@@ -50,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Camera")]
     [SerializeField] private GameObject _cameraFollowGo;
     private CameraFollowingObjectScript _cameraFollowObject;
+    private float _fallSpeedYDampingChangeTreshold;
 
     private bool _changingDirection =>
        (_rigidbody2D.velocity.x > 0f && _horizontalDirection < 0f) || (_rigidbody2D.velocity.x < 0f && _horizontalDirection > 0f);
@@ -60,6 +61,8 @@ public class PlayerMovement : MonoBehaviour
         _animator = GetComponent<Animator>();
 
         _cameraFollowObject = _cameraFollowGo.GetComponent<CameraFollowingObjectScript>();
+
+        _fallSpeedYDampingChangeTreshold = CameraManager.instance._fallSpeedYDampingChangeTheshold;
     }
 
     private void Update()
@@ -113,6 +116,18 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash)
         {
             StartCoroutine(Dash());
+        }
+
+        if(_onGround && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+
+        if(!_onGround && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+
+            CameraManager.instance.LerpYDamping(false);
         }
     }
 

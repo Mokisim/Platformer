@@ -91,9 +91,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        WallSlide();
-        WallJump();
-
         _horizontal = Input.GetAxisRaw("Horizontal");
 
         if (Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
@@ -153,6 +150,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        WallSlide();
+        WallJump();
         CheckCollisions();
 
         if (_isDashing)
@@ -235,7 +234,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallSlide()
     {
-        if (IsWalled() && !_onGround)
+        if (IsWalled() && !_onGround && Input.GetAxisRaw("Horizontal") != 0)
         {
             _isWallSliding = true;
             _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, Mathf.Clamp(_rigidbody2D.velocity.y, -_wallSlidingSpeed, float.MaxValue));
@@ -267,7 +266,7 @@ public class PlayerMovement : MonoBehaviour
             _isWallJumping = true;
 
             _rigidbody2D.velocity = new Vector2(-Input.GetAxisRaw("Horizontal") * _wallJumpingPower.x, _wallJumpingPower.y);
-
+            
             _wallJumpingCounter -= 1;
 
             Invoke(nameof(StopWallJumping), _wallJumpingDuration);

@@ -14,21 +14,21 @@ public class UserInterface : MonoBehaviour
     [SerializeField] private Image[] _hearts;
     [SerializeField] private Sprite _heartSprite;
     [SerializeField] private Sprite _emptyHeartSprite;
-    
+
     private int _score = 0;
     private int _health;
     private int _currentHearts;
 
     [SerializeField] private Rigidbody2D _player;
     [SerializeField] private Transform _spawnPoint;
-    
+
     private Transform _lastCheackPoint;
-    
-    [SerializeField]private RestartScript _restartScript;
+
+    [SerializeField] private RestartScript _restartScript;
 
     private bool _isImmotral;
     private bool _isPickUp;
-    
+
     private void Start()
     {
         _lastCheackPoint = _spawnPoint;
@@ -51,10 +51,7 @@ public class UserInterface : MonoBehaviour
             _isPickUp = true;
             Invoke("PickUpBonus", 0.02f);
         }
-    }
 
-    public void OnTriggerStay2D(Collider2D player)
-    {
         if (player.CompareTag("Trap") && _isImmotral == false)
         {
             _health--;

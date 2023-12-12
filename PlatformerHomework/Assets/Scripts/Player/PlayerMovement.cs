@@ -5,12 +5,15 @@ using TMPro.EditorUtilities;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D _rigidbody2D;
     private Animator _animator;
-    
+    private SpriteRenderer _spriteRenderer;
+    private Transform _playerTransform;
+
     [Header("Movement")]
     private float _horizontal;
     private float _speed = 8f;
@@ -47,6 +50,18 @@ public class PlayerMovement : MonoBehaviour
     private float _dashingTime = 0.3f;
     private float _dashingCooldown = 0.5f;
 
+    [Header("Wall slide")]
+    [SerializeField] private Transform _wallCheck;
+    [SerializeField] private LayerMask _wallLayer;
+
+    private bool _isWallSliding;
+    private float _wallSlidingSpeed = 2f;
+    private bool _isWallJumping;
+    private float _wallJumpingTime = 0.2f;
+    private float _wallJumpingCounter = 1f;
+    private float _wallJumpingDuration = 0.4f;
+    private Vector2 _wallJumpingPower = new Vector2(100f, 16f);
+
     [Header("Camera")]
     [SerializeField] private GameObject _cameraFollowGo;
     private CameraFollowingObjectScript _cameraFollowObject;
@@ -59,6 +74,8 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _playerTransform = GetComponent<Transform>();
 
         _cameraFollowObject = _cameraFollowGo.GetComponent<CameraFollowingObjectScript>();
 
@@ -73,6 +90,9 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
+
+        WallSlide();
+        WallJump();
 
         _horizontal = Input.GetAxisRaw("Horizontal");
 
@@ -118,12 +138,12 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Dash());
         }
 
-        if(_onGround && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
+        if (_onGround && !CameraManager.instance.IsLerpingYDamping && !CameraManager.instance.LerpedFromPlayerFalling)
         {
             CameraManager.instance.LerpYDamping(true);
         }
 
-        if(!_onGround && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
+        if (!_onGround && !CameraManager.instance.IsLerpingYDamping && CameraManager.instance.LerpedFromPlayerFalling)
         {
             CameraManager.instance.LerpedFromPlayerFalling = false;
 
@@ -204,6 +224,59 @@ public class PlayerMovement : MonoBehaviour
         _animator.StopPlayback();
         yield return new WaitForSeconds(_dashingCooldown);
         _canDash = true;
+    }
+
+    private bool IsWalled()
+    {
+        float circleRadius = 0.2f;
+
+        return Physics2D.OverlapCircle(_wallCheck.position, circleRadius, _wallLayer);
+    }
+
+    private void WallSlide()
+    {
+        if (IsWalled() && !_onGround)
+        {
+            _isWallSliding = true;
+            _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, Mathf.Clamp(_rigidbody2D.velocity.y, -_wallSlidingSpeed, float.MaxValue));
+            _spriteRenderer.flipX = true;
+        }
+        else
+        {
+            _isWallSliding = false;
+            _spriteRenderer.flipX = false;
+        }
+    }
+
+    private void WallJump()
+    {
+        if (_isWallSliding)
+        {
+            _isWallJumping = false;
+            _wallJumpingCounter = _wallJumpingTime;
+
+            CancelInvoke(nameof(StopWallJumping));
+        }
+        else
+        {
+            _wallJumpingCounter -= Time.deltaTime;
+        }
+
+        if (Input.GetButtonDown("Jump") && _wallJumpingCounter > 0)
+        {
+            _isWallJumping = true;
+
+            _rigidbody2D.velocity = new Vector2(-Input.GetAxisRaw("Horizontal") * _wallJumpingPower.x, _wallJumpingPower.y);
+
+            _wallJumpingCounter -= 1;
+
+            Invoke(nameof(StopWallJumping), _wallJumpingDuration);
+        }
+    }
+
+    private void StopWallJumping()
+    {
+        _isWallJumping = false;
     }
 
     private void FallMultiplier()

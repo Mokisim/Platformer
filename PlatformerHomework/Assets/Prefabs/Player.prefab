@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5278748871788780639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8052798400225972179}
+  m_Layer: 0
+  m_Name: Wall Check
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8052798400225972179
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5278748871788780639}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.31, y: -0.14, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7439758733495559227}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6259035615036710542
 GameObject:
   m_ObjectHideFlags: 0
@@ -16,7 +47,6 @@ GameObject:
   - component: {fileID: 3820083391347398908}
   - component: {fileID: 1872573896299529449}
   - component: {fileID: 7273207271849180824}
-  - component: {fileID: 1192644336997593054}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -36,7 +66,8 @@ Transform:
   m_LocalPosition: {x: -206.37, y: -3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8052798400225972179}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4471805380755017324
@@ -100,7 +131,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 6259035615036710542}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 56b95e59738d83c4b8fd0188e714962f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -195,6 +226,11 @@ MonoBehaviour:
   _groundRaycastLength: 0.56
   _edgeRaycastOffset: {x: 0.51, y: 0.01, z: 0}
   _innerRaycastOffset: {x: 0.15, y: 0.01, z: 0}
+  _wallCheck: {fileID: 8052798400225972179}
+  _wallLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _cameraFollowGo: {fileID: 0}
 --- !u!95 &1872573896299529449
 Animator:
   serializedVersion: 5
@@ -238,38 +274,3 @@ MonoBehaviour:
   _player: {fileID: 2907922855327947047}
   _spawnPoint: {fileID: 0}
   _restartScript: {fileID: 0}
---- !u!58 &1192644336997593054
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6259035615036710542}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.0069354773}
-  serializedVersion: 2
-  m_Radius: 0.5069355

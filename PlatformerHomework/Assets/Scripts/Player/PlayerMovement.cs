@@ -54,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _wallCheck;
     [SerializeField] private LayerMask _wallLayer;
 
+    [SerializeField] private Vector3 _wallRaycastOffset;
+    [SerializeField] private float _wallRaycastLength = 0.65f;
+
     private bool _isWallSliding;
     private float _wallSlidingSpeed = 2f;
     private bool _isWallJumping;
@@ -61,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
     private float _wallJumpingCounter = 1f;
     private float _wallJumpingDuration = 0.4f;
     private Vector2 _wallJumpingPower = new Vector2(100f, 16f);
+    private bool _isWallRight;
 
     [Header("Camera")]
     [SerializeField] private GameObject _cameraFollowGo;
@@ -265,7 +269,14 @@ public class PlayerMovement : MonoBehaviour
         {
             _isWallJumping = true;
 
-            _rigidbody2D.velocity = new Vector2(-Input.GetAxisRaw("Horizontal") * _wallJumpingPower.x, _wallJumpingPower.y);
+            if (_isWallRight == false)
+            {
+                _rigidbody2D.velocity = new Vector2(_wallJumpingPower.x * 1, _wallJumpingPower.y);
+            }
+            else
+            {
+                _rigidbody2D.velocity = new Vector2(_wallJumpingPower.x * -1, _wallJumpingPower.y);
+            }
             
             _wallJumpingCounter -= 1;
 
@@ -303,6 +314,9 @@ public class PlayerMovement : MonoBehaviour
             !Physics2D.Raycast(transform.position + _innerRaycastOffset, Vector2.up, _topRaycastLength, _groundLayer) ||
             Physics2D.Raycast(transform.position - _edgeRaycastOffset, Vector2.up, _topRaycastLength, _groundLayer) &&
             !Physics2D.Raycast(transform.position - _innerRaycastOffset, Vector2.up, _topRaycastLength, _groundLayer);
+
+        _isWallRight = Physics2D.Raycast(transform.position + _wallRaycastOffset, Vector2.right, _wallRaycastLength, _groundLayer);
+        Debug.Log($"{_isWallRight}");
     }
 
     private void OnDrawGizmos()
@@ -321,6 +335,8 @@ public class PlayerMovement : MonoBehaviour
                         transform.position - _innerRaycastOffset + Vector3.up * _topRaycastLength + Vector3.left * _topRaycastLength);
         Gizmos.DrawLine(transform.position + _innerRaycastOffset + Vector3.up * _topRaycastLength,
                         transform.position + _innerRaycastOffset + Vector3.up * _topRaycastLength + Vector3.right * _topRaycastLength);
+
+        Gizmos.DrawLine(transform.position + _wallRaycastOffset, transform.position + _wallRaycastOffset + Vector3.right * _wallRaycastLength);
     }
 
     private void ApplyGroundLinearDrag()

@@ -62,8 +62,8 @@ public class PlayerMovement : MonoBehaviour
     private bool _isWallJumping;
     private float _wallJumpingTime = 0.2f;
     private float _wallJumpingCounter = 1f;
-    private float _wallJumpingDuration = 0.4f;
-    private Vector2 _wallJumpingPower = new Vector2(100f, 16f);
+    private float _wallJumpingDuration = 0.5f;
+    [SerializeField]private Vector2 _wallJumpingPower = new Vector2(30f, 20f);
     private bool _isWallRight;
 
     [Header("Camera")]
@@ -97,12 +97,12 @@ public class PlayerMovement : MonoBehaviour
 
         _horizontal = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetAxisRaw("Horizontal") > 0 && !_facingRight)
+        if (_horizontal > 0 && !_facingRight)
         {
             Flip();
             _cameraFollowObject.CallTurn();
         }
-        else if (Input.GetAxisRaw("Horizontal") < 0 && _facingRight)
+        else if (_horizontal < 0 && _facingRight)
         {
             Flip();
             _cameraFollowObject.CallTurn();
@@ -163,7 +163,10 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        _rigidbody2D.velocity = new Vector2(_horizontal * _speed, _rigidbody2D.velocity.y);
+        if (_onGround || !_isWallSliding || !_isWallJumping)
+        {
+            _rigidbody2D.velocity = new Vector2(_horizontal * _speed, _rigidbody2D.velocity.y);
+        }
 
         if (_onGround)
         {
@@ -269,7 +272,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _isWallJumping = true;
 
-            if (_isWallRight == false)
+            if (!_isWallRight)
             {
                 _rigidbody2D.velocity = new Vector2(_wallJumpingPower.x * 1, _wallJumpingPower.y);
             }
